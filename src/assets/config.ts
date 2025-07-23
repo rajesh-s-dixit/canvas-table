@@ -1,5 +1,5 @@
-import type { IColumnConfig } from "../src/types/columnConfig";
-import type { ITableConfig } from "../src/types/tableConfig";
+import type { IColumnConfig } from "../table/types/columnConfig";
+import type { ITableConfig } from "../table/types/tableConfig";
 
 const columns: IColumnConfig[] = [
   {
