@@ -1,12 +1,10 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
-import { createGridLines, getCell, getDimension, getNextCellData, highlightCellBorder } from "./tableUtils";
+import { addInput, createGridLines, getCell, getDimension, getNextCellData, highlightCellBorder, removeInput } from "./tableUtils";
+import type { ICanvasTableProps, ICellData } from "./types";
 
-export interface ICanvasTableProps {
-  config: any; // Define the type of config based on your requirements
-}
 export const CanvasTable = (props: ICanvasTableProps) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [selectedCell, setSelectedCell] = useState<ReturnType<typeof getCell> | null>(null);
+  const [selectedCell, setSelectedCell] = useState<ICellData | null>(null);
 
   const getCanvasContext = (): CanvasRenderingContext2D | null => {
     const canvas: HTMLCanvasElement | null = canvasRef.current;
@@ -26,12 +24,20 @@ export const CanvasTable = (props: ICanvasTableProps) => {
   const handleClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
     const context = getCanvasContext();
     if (!context) return;
+    removeInput();
     if (selectedCell) {
       createGridLines(props.config, context);
     }
     const cellData = getCell(props.config, event);
     setSelectedCell(cellData);
     highlightCellBorder(context, cellData, props.config.theme);
+  }
+
+  const handleDoubleClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    const {left, top } = event.currentTarget.getBoundingClientRect();
+    const cellData = getCell(props.config, event);
+
+    addInput({ ...cellData, xOffset: cellData?.xOffset + left, yOffset: cellData?.yOffset + top } as ICellData);
   }
 
   const handleKeyNavigation = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -52,7 +58,7 @@ export const CanvasTable = (props: ICanvasTableProps) => {
   const { height, width} = getDimension(props.config);
   return (
     <div className="table-container" tabIndex={0} onKeyDown={handleKeyNavigation}>
-      <canvas ref={canvasRef} height={height} width={width} onClick={handleClick} />
+      <canvas ref={canvasRef} height={height} width={width} onClick={handleClick} onDoubleClick={handleDoubleClick} />
     </div>
   )
 }

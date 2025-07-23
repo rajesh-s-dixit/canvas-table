@@ -1,10 +1,10 @@
 import {useState} from "react";
-import { CanvasTable } from "@components/table";
-import { tableConfig } from "@public/config";
-import { tableConfig2 } from "@public/config2";
+import { CanvasTable } from "../table";
+import { tableConfig } from "../assets/config";
+import { tableConfig2 } from "../assets/config2";
 
 export const Homepage = () => {
-  const [config, setConfig] = useState(tableConfig);
+  const [config, setConfig] = useState(tableConfig2);
   const handleChange = ({target}) => setConfig(target.value === "config1" ? tableConfig : tableConfig2);
   return (
     <div className="homepage-container background-gray-100 p-4 margin-auto overflow-y-auto h-9/10">
@@ -18,7 +18,7 @@ export const Homepage = () => {
           <option value="config2">Config 2</option>
         </select>
       </div>
-      <div className="flex w-full h-fit overflow-y-auto">
+      <div className="flex w-full h-[80vh] overflow-y-auto">
         <CanvasTable config={config} />
       </div>
     </div>

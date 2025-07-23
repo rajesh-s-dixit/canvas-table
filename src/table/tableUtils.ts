@@ -1,17 +1,10 @@
 // Highlights the border of a cell using the theme's focusBorder color
-import { DEFAULT_COLUMN_WIDTH, DEFAULT_ROW_HEIGHT } from "../constants/constants";
-import { gridThemes } from "../constants/gridTheme";
-import type { IColumnConfig } from "../types/columnConfig";
-import type { ITableConfig } from "../types/tableConfig";
-
-export interface ICellData {
-  row: any,
-  column: IColumnConfig,
-  rowIndex: number,
-  columnIndex: number,
-  xOffset: number,
-  yOffset: number
-}
+import { DEFAULT_COLUMN_WIDTH, DEFAULT_ROW_HEIGHT } from "./constants/constants";
+import { gridThemes } from "./constants/gridTheme";
+import type { IColumnConfig } from "./types/columnConfig";
+import type { ITableConfig } from "./types/tableConfig";
+import { createInput } from "../components/domUtils";
+import type { ICellData } from "./types";
 
 const getTheme = (theme: string) => {
   switch (theme) {
@@ -139,9 +132,9 @@ export const getCell = (config: ITableConfig, event: React.MouseEvent<HTMLCanvas
   if (columnIndex === -1) return null; // Out of bounds
 
   return {
-    row: data[rowIndex],
+    row: data[rowIndex - 1],
     column: columns[columnIndex],
-    rowIndex,
+    rowIndex: rowIndex - 1,
     columnIndex,
     xOffset,
     yOffset: rowIndex * rowHeight, // yOffset is the top of the cell
@@ -150,7 +143,7 @@ export const getCell = (config: ITableConfig, event: React.MouseEvent<HTMLCanvas
 
 export const highlightCellBorder = (
   context: CanvasRenderingContext2D,
-  cell: ReturnType<typeof getCell>,
+  cell: ICellData,
   themeName: string = "light",
 ) => {
   if (!cell) return;
@@ -198,7 +191,7 @@ export const getCellDataFromIndex = (config: ITableConfig, rowIndex: number, col
   };
 }
 
-export const getNextCellData = (config: ITableConfig, key: string, cellData: ReturnType<typeof getCell>) => {
+export const getNextCellData = (config: ITableConfig, key: string, cellData: ICellData) => {
   const [xDelta, yDelta] = getKeyOffset(key);
   const columnIndex = cellData!.columnIndex + xDelta;
   const rowIndex = cellData!.rowIndex + yDelta;
@@ -207,4 +200,16 @@ export const getNextCellData = (config: ITableConfig, key: string, cellData: Ret
     return null; // Out of bounds
   }
   return getCellDataFromIndex(config, rowIndex, columnIndex);
+}
+
+export const removeInput = () => {
+  const input = document.querySelector(".edit-cell-input");
+  if (input) {
+    input.remove();
+  }
+}
+export const addInput = (cellData: ICellData) => {
+  const data = cellData?.row[cellData.column.field];
+  removeInput();
+  createInput(data, { xOffset: cellData.xOffset, yOffset: cellData.yOffset, width: cellData.column.width || DEFAULT_COLUMN_WIDTH, height: DEFAULT_ROW_HEIGHT });
 }
