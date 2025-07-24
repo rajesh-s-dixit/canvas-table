@@ -94,7 +94,7 @@ export const getCellDataFromIndex = (
     rowIndex,
     columnIndex,
     xOffset,
-    yOffset: rowIndex * DEFAULT_ROW_HEIGHT, // yOffset is the top of the cell
+    yOffset: (rowIndex + 1) * DEFAULT_ROW_HEIGHT, // yOffset is the top of the cell
   };
 };
 
@@ -104,11 +104,11 @@ export const getNextCellData = (
   cellData: ICellData,
 ) => {
   const [xDelta, yDelta] = getKeyOffset(key);
-  const columnIndex = cellData!.columnIndex + xDelta;
-  const rowIndex = cellData!.rowIndex + yDelta;
+  const columnIndex = cellData.columnIndex + xDelta;
+  const rowIndex = cellData.rowIndex + yDelta;
 
   if (
-    rowIndex < 1 ||
+    rowIndex < 0 ||
     rowIndex >= config.data.length ||
     columnIndex < 0 ||
     columnIndex >= config.columns.length

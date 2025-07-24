@@ -44,18 +44,18 @@ export const CanvasTable = (props: ICanvasTableProps) => {
   const handleDoubleClick = (event: React.MouseEvent<HTMLCanvasElement>) => {};
 
   const handleKeyNavigation = (event: KeyboardEvent<HTMLDivElement>) => {
-    // const { key } = event;
-    // if (key.startsWith("Arrow")) {
-    //   const context = getCanvasContext();
-    //   const newCellData = getNextCellData(props.config, key, selectedCell);
-    //   if (newCellData === null) {
-    //     event.preventDefault();
-    //     return;
-    //   }
-    //   createGridLines(props.config, context!);
-    //   setSelectedCell(newCellData);
-    //   highlightCellBorder(context!, newCellData, props.config.theme);
-    // }
+    const { key } = event;
+    if (key.startsWith("Arrow")) {
+      const context = getCanvasContext();
+      const newCellData = getNextCellData(props.config, key, selectedCell);
+      if (newCellData === null) {
+        event.preventDefault();
+        return;
+      }
+      renderTable(props.config, context!);
+      setSelectedCell(newCellData);
+      highlightCellBorder(context!, newCellData, props.config.theme);
+    }
   };
 
   useEffect(() => renderMyTable(), []);
