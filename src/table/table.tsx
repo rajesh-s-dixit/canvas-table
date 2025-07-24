@@ -1,6 +1,15 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
-import { addInput, createGridLines, getCell, getDimension, getNextCellData, highlightCellBorder, removeInput } from "./tableUtils";
+import {
+  addInput,
+  // createGridLines,
+  getCell,
+  getDimension,
+  getNextCellData,
+  highlightCellBorder,
+  removeInput,
+} from "./utils";
 import type { ICanvasTableProps, ICellData } from "./types";
+import { renderTable } from "./utils/renderUtils";
 
 export const CanvasTable = (props: ICanvasTableProps) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -10,55 +19,62 @@ export const CanvasTable = (props: ICanvasTableProps) => {
     const canvas: HTMLCanvasElement | null = canvasRef.current;
     if (!canvas) {
       throw new Error("Canvas element is not available");
-    } else
-      return canvas.getContext('2d');
-  }
+    } else return canvas.getContext("2d");
+  };
 
-  const renderTable = () => {
+  const renderMyTable = () => {
     const context = getCanvasContext();
     if (!context) return;
-    
-    createGridLines(props.config, context);
-  }
+
+    renderTable(props.config, context);
+  };
 
   const handleClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
     const context = getCanvasContext();
     if (!context) return;
     removeInput();
     if (selectedCell) {
-      createGridLines(props.config, context);
+      renderTable(props.config, context);
     }
     const cellData = getCell(props.config, event);
     setSelectedCell(cellData);
     highlightCellBorder(context, cellData, props.config.theme);
-  }
+  };
 
-  const handleDoubleClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
-    const {left, top } = event.currentTarget.getBoundingClientRect();
-    const cellData = getCell(props.config, event);
-
-    addInput({ ...cellData, xOffset: cellData?.xOffset + left, yOffset: cellData?.yOffset + top } as ICellData);
-  }
+  const handleDoubleClick = (event: React.MouseEvent<HTMLCanvasElement>) => {};
 
   const handleKeyNavigation = (event: KeyboardEvent<HTMLDivElement>) => {
-    const { key } = event;
-    if (key.startsWith("Arrow")) {
-      const context = getCanvasContext();
-      const newCellData = getNextCellData(props.config, key, selectedCell);
-      createGridLines(props.config, context!);
-      setSelectedCell(newCellData);
-      highlightCellBorder(context!, newCellData, props.config.theme);
+    // const { key } = event;
+    // if (key.startsWith("Arrow")) {
+    //   const context = getCanvasContext();
+    //   const newCellData = getNextCellData(props.config, key, selectedCell);
+    //   if (newCellData === null) {
+    //     event.preventDefault();
+    //     return;
+    //   }
+    //   createGridLines(props.config, context!);
+    //   setSelectedCell(newCellData);
+    //   highlightCellBorder(context!, newCellData, props.config.theme);
+    // }
+  };
 
-    }
-  }
+  useEffect(() => renderMyTable(), []);
+  useEffect(() => renderMyTable(), [props.config]);
 
-  useEffect(() => renderTable(), []);
-  useEffect(() => renderTable(), [props.config]);
-
-  const { height, width} = getDimension(props.config);
+  const { height, width } = getDimension(props.config);
   return (
-    <div className="table-container" tabIndex={0} onKeyDown={handleKeyNavigation}>
-      <canvas ref={canvasRef} height={height} width={width} onClick={handleClick} onDoubleClick={handleDoubleClick} />
+    <div
+      className="table-container"
+      tabIndex={0}
+      onKeyDown={handleKeyNavigation}
+    >
+      <canvas
+        ref={canvasRef}
+        height={height}
+        width={width}
+        onClick={handleClick}
+        onDoubleClick={handleDoubleClick}
+      />
     </div>
-  )
-}
+  );
+};
