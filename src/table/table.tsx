@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import {
-  addInput,
-  // createGridLines,
   getCell,
   getDimension,
   getNextCellData,
@@ -10,6 +8,7 @@ import {
 } from "./utils";
 import type { ICanvasTableProps, ICellData } from "./types";
 import { renderTable } from "./utils/renderUtils";
+import { FilterContainer } from "./tableFilter";
 
 export const CanvasTable = (props: ICanvasTableProps) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -68,6 +67,7 @@ export const CanvasTable = (props: ICanvasTableProps) => {
       tabIndex={0}
       onKeyDown={handleKeyNavigation}
     >
+      <FilterContainer config={props.config} />
       <canvas
         ref={canvasRef}
         height={height}

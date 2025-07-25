@@ -89,7 +89,7 @@ export const renderTable = (
           context,
           column.header,
           headerStyle,
-          xOffset + (column.width || DEFAULT_COLUMN_WIDTH) * 0.5,
+          xOffset + (column.width || DEFAULT_COLUMN_WIDTH) * 0.4,
           yOffset,
         );
       } else {
@@ -99,6 +99,22 @@ export const renderTable = (
       xOffset += column.width || DEFAULT_COLUMN_WIDTH;
     });
   });
+};
+
+export const createHeaderFilter = ({ data, columns }: ITableConfig) => {
+  const filterOptions: { [key: string]: string[] } = {};
+  const offset: { [key: string]: { xOffset: number } } = {};
+  let xOffset = 0;
+  columns.forEach((column) => {
+    const temp: { [key: string]: boolean } = {};
+    data.forEach((row) => (temp[row[column.field]] = true));
+    filterOptions[column.field] = Object.keys(temp).sort();
+    offset[column.field] = {
+      xOffset: xOffset + (column.width || DEFAULT_COLUMN_WIDTH) - 20,
+    };
+    xOffset += column.width || DEFAULT_COLUMN_WIDTH;
+  });
+  return [filterOptions, offset];
 };
 
 const drawBackground = (
